@@ -5,16 +5,18 @@ using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(AppDbContext appDb) : BaseApiController
+public class AccountController(AppDbContext appDb,ITokenService tokenService) : BaseApiController
 {
     [HttpPost("register")] //api/Account/register
 
-    public async Task<ActionResult<AppUser>> Register(RegisterDTO dTO)
+    public async Task<ActionResult<UserDTO>> Register(RegisterDTO dTO)
     {
         if (await ExistingEmailOrNot(dTO.email)) return BadRequest("Email taken ");
         using var hmac = new HMACSHA512();
@@ -28,7 +30,13 @@ public class AccountController(AppDbContext appDb) : BaseApiController
         };
         appDb.Users.Add(user);
         await appDb.SaveChangesAsync();
-        return user;
+        return  new UserDTO
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Email = user.Email,
+            token = await tokenService.CreateToken(user)
+        };
     }
     private async Task<bool> ExistingEmailOrNot(string email)
     {
@@ -37,7 +45,7 @@ public class AccountController(AppDbContext appDb) : BaseApiController
 
     [HttpPost("login")]
 
-    public async Task<ActionResult<AppUser>> Login(LoginDTO loginDTO)
+    public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
     {
         var user = await appDb.Users.SingleOrDefaultAsync(x => x.Email == loginDTO.email);
         if (user == null) return Unauthorized("Invalid email address");
@@ -47,7 +55,13 @@ public class AccountController(AppDbContext appDb) : BaseApiController
         {
             if (computedhash[i] != user.PasswordHash[i]) return Unauthorized("invalid password");
         }
-        return user;
+        return new UserDTO
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Email = user.Email,
+            token = await tokenService.CreateToken(user)
+        };
 
     }
 
