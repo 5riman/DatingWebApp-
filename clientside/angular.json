@@ -5,7 +5,14 @@
   "projects": {
     "clientside": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": { 
+        "@schematics/angular:component": {
+          "skipTests": true,
+          "path": "src"
+          
+        }
+
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
