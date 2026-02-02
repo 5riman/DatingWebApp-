@@ -13,8 +13,17 @@
 </nav>
 
 <div class="flex align-middle ml-auto gap-3">
+  @if(logedIn()){
+    <div class="dropdown">
+  <div tabindex="0" role="button" class="btn m-1">Click</div>
+  <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+    <li><a>Item 1</a></li>
+    <li><a>Item 2</a></li>
+  </ul>
+</div>
+  }
+  @else {
 <form #loginform="ngForm" (ngSubmit)= "(login)"  class="flex items-center gap-3">
-
   <input 
   [(ngModel)]="credentials.email"
   type="text" name="email" class="input" placeholder="Email">
@@ -25,6 +34,14 @@
   <button type="submit" class="btn">Login</button>
 
 </form>
+}
+<div class="dropdown">
+  <div tabindex="0" role="button" class="btn m-1">Click</div>
+  <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+    <li><a>Item 1</a></li>
+    <li><a>Item 2</a></li>
+  </ul>
+</div>
 </div>
 </div>
 </header>
