@@ -64,6 +64,5 @@ public class AccountController(AppDbContext appDb,ITokenService tokenService) : 
         };
 
     }
-
     
 }
